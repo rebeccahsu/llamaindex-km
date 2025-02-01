@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: dev-ingress
+  annotations:
+    # Deprecated, replaced by ingressClassName.
+    # However, a load balancer may not be created (during testing)
+    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.global-static-ip-name: "mm-km-dev-ip"
+
+spec:
+  # ingressClassName: gce
+  rules:
+  - http:
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: nextjs-service
+            port:
+              number: 3000

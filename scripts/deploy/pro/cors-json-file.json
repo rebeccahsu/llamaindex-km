@@ -1,0 +1,15 @@
+[
+  {
+    "origin": [
+      "*"
+    ],
+    "responseHeader": [
+      "Content-Type",
+      "Access-Control-Allow-Origin",
+      "X-Upload-Content-Length",
+      "X-Goog-Resumable"
+    ],
+    "method": ["*"],
+    "maxAgeSeconds": 3600
+  }
+]

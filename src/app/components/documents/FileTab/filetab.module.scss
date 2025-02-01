@@ -1,0 +1,9 @@
+.actionButton {
+  padding: 0px !important;
+}
+
+.filesTable {
+  :global(.ant-table-container) {
+    overflow-x: auto;
+  }
+}

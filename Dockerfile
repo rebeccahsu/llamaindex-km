@@ -1,16 +1,18 @@
-FROM node:20-alpine as build
+FROM node:20.12.2
 
+# client
+EXPOSE 3000
 WORKDIR /app
 
-# Install dependencies
-COPY package.json package-lock.* ./
-RUN npm install
-
-# Build the application
+# from local
 COPY . .
-RUN npm run build
 
-# ====================================
-FROM build as release
+# for liveness probe
+RUN touch /tmp/healthy
 
-CMD ["npm", "run", "start"]
+RUN corepack enable \
+  && yarn set version stable \
+  && yarn config set nodeLinker node-modules \
+  && yarn workspaces focus --production
+
+CMD ["yarn", "start"]

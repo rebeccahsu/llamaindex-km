@@ -1,0 +1,9 @@
+.actionButton {
+  padding: 0px !important;
+}
+
+.usersTable {
+  :global(.ant-table-container) {
+    overflow-x: auto;
+  }
+}

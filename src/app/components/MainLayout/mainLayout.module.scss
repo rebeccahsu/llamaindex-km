@@ -1,0 +1,43 @@
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0px;
+}
+
+.sideMenu {
+  min-height: calc(100vh - 50px);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .bottom {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .profile {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      padding: 0px 10px;
+    }
+
+    .logoutButton {
+      width: 100%;
+    }
+  }
+}

@@ -1,0 +1,133 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appserver
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: appserver
+
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+
+  template:
+    metadata:
+      labels:
+        app: appserver
+  
+    spec:
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      
+      containers:
+      - name: appserver
+        image: asia.gcr.io/km/dev:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+
+        livenessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/healthy
+          initialDelaySeconds: 15
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+          
+        readinessProbe:
+          httpGet:
+            scheme: HTTP
+            port: 3000
+            path: /api/health
+          initialDelaySeconds: 15
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
+          
+        ports:
+        - containerPort: 3000
+          
+        env:
+          # Runtime environment
+          - name: NODE_ENV
+            value: "production"
+          - name: PORT
+            value: "3000"
+            
+          - name: MODEL_PROVIDER
+            value: "openai"
+
+          - name: MODEL
+            value: "gpt-4o-mini"
+
+          - name: EMBEDDING_MODEL
+            value: "text-embedding-ada-002"
+
+          - name: OPENAI_API_KEY
+            value: ""
+
+          - name: TOP_K
+            value: "5"
+
+          - name: MILVUS_ADDRESS
+            value: "http://milvus-service:19530"
+
+          - name: MILVUS_COLLECTION
+            value: "llamacollection"
+
+          - name: MILVUS_USERNAME
+            value: "user"
+
+          - name: MILVUS_PASSWORD
+            value: "password"
+
+          - name: FILESERVER_URL_PREFIX
+            value: "https://localhost:3000/api/files"
+
+          - name: NEXT_PUBLIC_SERVER_HOST
+            value: "http://localhost:3000"
+
+          - name: MONGODB_URI
+            value: "mongodb://mongo-service:27017/db"
+
+          - name: NEXT_QUESTION_PROMPT
+            value: "You're a helpful assistant. Your task is to suggest the next question that customer might ask about the business. Here is the conversation history---------------------{conversation}---------------------Given the conversation history, give me 3 questions that the customer might ask next!Your answer should be wrapped in three sticks which follows the following format:```<question 1><question 2><question 3>```"
+
+          - name: SYSTEM_PROMPT
+            value: "You are a helpful assistant who helps customers with their questions.You must interact with the customers on behalf of the business and like a real human assistant.You can:- provide information, answer questions, and have conversations with the customers.- provide suggestions, recommendations, and other assistance to the customers.- ask questions to the customers to get more information.- provide information about the business, products, services, and other topics related to the business if these information can be found in the context."
+
+          - name: SYSTEM_CITATION_PROMPT
+            value: "You have provided information from a knowledge base that has been passed to you in nodes of information.
+              Each node has useful metadata such as node ID, file name, page, etc.
+
+              If you cannot find the answer from the knowledge base and are unable to answer the question, say \'Sorry, I don\'t have the information you\'re looking for.\' in en or \'很抱歉，我無法提供您所需的$type-of-information$資訊。\' in zh-tw.
+              If you find the answer in the context, you must add the citation to the data node for each sentence or paragraph that you reference in the provided information.
+              The citation format is: . [citation:<node_id>]()
+              Where the <node_id> is the unique identifier of the data node.
+
+              Example:
+              We have two nodes:
+                node_id: xyz
+                file_name: llama.pdf
+                
+                node_id: abc
+                file_name: animal.pdf
+
+              User question: Tell me a fun fact about Llama.
+              Your answer:
+              A baby llama is called \'Cria\' [citation:xyz]().
+              It often live in desert [citation:abc]().
+              It\'s cute animal.
+              "
+

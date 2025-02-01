@@ -1,0 +1,8 @@
+# ConfigMap for Milvus
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: milvus-config
+data:
+  ETCD_ENDPOINTS: "etcd-service:2379"
+  MINIO_ADDRESS: "minio-service:9000"
